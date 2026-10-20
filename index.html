@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>합성 데이터 점검·채점 리포트 · rfq_requirements</title>
+<style>
+:root {
+  --bg: #ffffff; --fg: #1d2330; --muted: #5a6577; --line: #d5dbe5; --surface: #f4f6fa;
+  --notice-bg: #fff6df; --notice-line: #b7791f; --fail: #b42318; --warn: #a15c00; --skip: #5a6577; --pass: #1a7f4b;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14181f; --fg: #e6e9ef; --muted: #a3adbd; --line: #343c4a; --surface: #1c222c;
+    --notice-bg: #2c2410; --notice-line: #e0a93b; --fail: #ff8a80; --warn: #f2b45a; --skip: #a3adbd; --pass: #6fd49a;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0 auto; max-width: 62rem; padding: 1.5rem 1rem 4rem; background: var(--bg); color: var(--fg);
+  font: 16px/1.65 "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif; }
+h1 { font-size: 1.6rem; margin: 0 0 .25rem; }
+h2 { font-size: 1.25rem; margin: 2.2rem 0 .75rem; padding-bottom: .3rem; border-bottom: 2px solid var(--line); }
+h3 { font-size: 1.05rem; margin: 1.4rem 0 .4rem; }
+.meta { color: var(--muted); margin: 0 0 1.2rem; }
+.notice { border: 2px solid var(--notice-line); background: var(--notice-bg); border-radius: .5rem; padding: .9rem 1.1rem; }
+.notice .tag { font-weight: 700; margin: 0 0 .4rem; }
+.notice p { margin: .3rem 0; }
+.headline { font-size: 1.15rem; }
+table { border-collapse: collapse; width: 100%; margin: .4rem 0 1.2rem; font-size: .94rem; }
+caption { text-align: left; color: var(--muted); font-size: .88rem; padding: .3rem 0; }
+th, td { border: 1px solid var(--line); padding: .35rem .6rem; text-align: left; vertical-align: top; }
+thead th { background: var(--surface); }
+td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.badge { display: inline-block; padding: 0 .45rem; border: 1px solid currentColor; border-radius: .3rem; font-weight: 700; font-size: .85rem; white-space: nowrap; }
+.s-fail { color: var(--fail); } .s-warn { color: var(--warn); } .s-skip { color: var(--skip); } .s-pass { color: var(--pass); }
+code { font-family: Consolas, "D2Coding", monospace; font-size: .9em; word-break: break-all; }
+.finding { margin: .3rem 0 .8rem; padding-left: .8rem; border-left: 3px solid var(--line); }
+.finding p { margin: .1rem 0; }
+.small { color: var(--muted); font-size: .9rem; }
+.scroll { overflow-x: auto; }
+@media print {
+  :root { --bg: #ffffff; --fg: #000000; --muted: #333333; --line: #888888; --surface: #eeeeee; --notice-bg: #ffffff; --notice-line: #000000; }
+  body { max-width: none; padding: 0; font-size: 11pt; }
+  h2 { break-after: avoid; } table, .finding { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<header>
+<h1>합성 데이터 점검·채점 리포트</h1>
+<p class="meta">스키마 <code>rfq_requirements</code> v0.1 · 실행 <code>20261020-171020-s7</code></p>
+</header>
+<main>
+
+<section id="limits">
+<h2>1. 한계 고지</h2>
+<div class="notice" role="note">
+<p class="tag">★ 합성 데이터 기준 (실성능 아님)</p>
+<p>이 결과는 합성 데이터를 기준으로 한다. 방법의 타당성을 확인하는 용도이며 실제 문서에서의 성능을 보증하지 않는다. 실제 문서의 오류, 스캔 품질, 양식 다양성은 재현하지 못한다.</p>
+</div>
+<h3>이 결과가 입증하는 것</h3>
+<ul>
+<li>스키마 설정대로 합성 데이터와 정답이 만들어지고, 같은 시드면 같은 데이터가 나온다.</li>
+<li>만든 문서를 다시 읽으면 정답이 복원된다. (왕복 검증)</li>
+<li>채점기가 알려진 개수의 오류를 정확히 센다. (오답 주입 시험)</li>
+<li>점검 항목(제약, 변형 비율, 분포, 안전성, 왕복, 재현성)의 기준에서 이 데이터가 규칙을 지킨다.</li>
+</ul>
+<h3>이 결과가 입증하지 못하는 것</h3>
+<ul>
+<li>실제 문서에서의 추출 정확도. 합성 문서에서 높은 점수가 나와도 실제 문서에서도 그렇다는 뜻이 아니다.</li>
+<li>실제 문서의 스캔 품질, 비정형 서술, 오류, 표 모양의 다양성. 합성 문서는 정해진 양식 3종과 문장 틀로만 만든다.</li>
+<li>보류 양식에서의 일반화 성능. 보류 양식도 같은 생성기가 만든 합성 문서이므로, 격차는 개발 양식에 맞춰 튜닝했는지를 보는 지표일 뿐이다.</li>
+<li>수작업 대비 시간 절감. 이것은 별도로 측정한다.</li>
+</ul>
+</section>
+
+<section id="summary">
+<h2>2. 결과 요약</h2>
+<p class="headline">점검 결과 (합성 데이터 기준 (실성능 아님)):
+통과 <strong>5</strong> · 경고 <strong>0</strong> ·
+실패 <strong>0</strong> · 건너뜀 <strong>1</strong></p>
+<div class="scroll"><table class="plain">
+<caption>점검 항목별 상태 (조치가 필요한 항목이 먼저)</caption>
+<thead><tr><th scope="col">상태</th><th scope="col">항목</th><th scope="col">이름</th><th scope="col">발견</th><th scope="col">참고</th></tr></thead>
+<tbody>
+<tr><td><span class="badge s-skip">SKIP (건너뜀)</span></td><th scope="row">C6</th><td>재현성</td><td class="num">0건</td><td>느려서 기본으로는 건너뜁니다. `--reproduce`를 붙이면 점검합니다.</td></tr>
+<tr><td><span class="badge s-pass">PASS (통과)</span></td><th scope="row">C1</th><td>제약 위반</td><td class="num">0건</td><td></td></tr>
+<tr><td><span class="badge s-pass">PASS (통과)</span></td><th scope="row">C2</th><td>변형 비율</td><td class="num">0건</td><td></td></tr>
+<tr><td><span class="badge s-pass">PASS (통과)</span></td><th scope="row">C3</th><td>분포</td><td class="num">0건</td><td>표본 부족: 값이 30개 미만인 항목은 분포를 판정하지 않았습니다.</td></tr>
+<tr><td><span class="badge s-pass">PASS (통과)</span></td><th scope="row">C4</th><td>안전성</td><td class="num">0건</td><td></td></tr>
+<tr><td><span class="badge s-pass">PASS (통과)</span></td><th scope="row">C5</th><td>왕복 정합성</td><td class="num">0건</td><td></td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section id="grade">
+<h2>3. 채점 결과</h2>
+<p class="headline">항목 정확도 <strong>99.4%</strong> (합성 데이터 기준 (실성능 아님)) — 179/180</p>
+<div class="scroll"><table class="score">
+<caption>전체 지표 (합성 데이터 기준 (실성능 아님))</caption>
+<thead><tr><th scope="col">지표</th><th scope="col">값</th><th scope="col">건수</th></tr></thead>
+<tbody>
+<tr><th scope="row">항목 정확도</th><td class="num">99.4%</td><td class="num">179/180</td></tr>
+<tr><th scope="row">문서 단위 완전 일치율</th><td class="num">96.7%</td><td class="num">29/30</td></tr>
+<tr><th scope="row">적합성 일치율</th><td class="num">해당 없음</td><td class="num">0/0</td></tr>
+<tr><th scope="row">오추출</th><td></td><td class="num">0</td></tr>
+<tr><th scope="row">미검출</th><td></td><td class="num">0</td></tr>
+<tr><th scope="row">환각</th><td></td><td class="num">0</td></tr>
+<tr><th scope="row">형식 오류</th><td></td><td class="num">1</td></tr>
+</tbody>
+</table></div>
+
+<div class="scroll"><table class="score">
+<caption>양식별 점수 (합성 데이터 기준 (실성능 아님))</caption>
+<thead><tr><th scope="col">양식</th><th scope="col">구분</th><th scope="col">항목 정확도</th><th scope="col">문서 완전 일치</th><th scope="col">오추출</th><th scope="col">미검출</th><th scope="col">환각</th><th scope="col">형식 오류</th></tr></thead>
+<tbody>
+<tr><th scope="row">format_a</th><td>개발</td><td class="num">100.0%</td><td class="num">10/10</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+<tr><th scope="row">format_b</th><td>개발</td><td class="num">100.0%</td><td class="num">10/10</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+<tr><th scope="row">format_c</th><td>보류</td><td class="num">98.3%</td><td class="num">9/10</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">1</td></tr>
+</tbody>
+</table></div>
+<p>보류 양식 격차: 개발 100.0% − 보류 98.3% = <strong>1.7%p</strong> (합성 데이터 기준 (실성능 아님)).
+<span class="small">격차는 개발 양식에 맞춰 튜닝했는지를 보는 지표이며 실제 문서에서의 일반화 성능이 아닙니다.</span></p>
+
+<div class="scroll"><table class="score">
+<caption>요구사항별 점수 (합성 데이터 기준 (실성능 아님))</caption>
+<thead><tr><th scope="col">요구사항</th><th scope="col">항목 정확도</th><th scope="col">오추출</th><th scope="col">미검출</th><th scope="col">환각</th><th scope="col">형식 오류</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>electrical.rated_voltage</code></th><td class="num">100.0%</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+<tr><th scope="row"><code>electrical.rated_current</code></th><td class="num">100.0%</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+<tr><th scope="row"><code>performance.airflow</code></th><td class="num">96.7%</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">1</td></tr>
+<tr><th scope="row"><code>durability.life_hours</code></th><td class="num">100.0%</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+<tr><th scope="row"><code>mechanical.connector_type</code></th><td class="num">100.0%</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+<tr><th scope="row"><code>certification.standards</code></th><td class="num">100.0%</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+</tbody>
+</table></div>
+
+<div class="scroll"><table class="score">
+<caption>변형별 점수 (합성 데이터 기준 (실성능 아님))</caption>
+<thead><tr><th scope="col">변형 태그</th><th scope="col">항목 정확도</th><th scope="col">맞음/전체</th></tr></thead>
+<tbody>
+<tr><th scope="row">missing</th><td class="num">100.0%</td><td class="num">5/5</td></tr>
+<tr><th scope="row">none</th><td class="num">100.0%</td><td class="num">134/134</td></tr>
+<tr><th scope="row">typo</th><td class="num">0.0%</td><td class="num">0/1</td></tr>
+<tr><th scope="row">unit_alias</th><td class="num">96.9%</td><td class="num">31/32</td></tr>
+<tr><th scope="row">unit_converted</th><td class="num">100.0%</td><td class="num">2/2</td></tr>
+<tr><th scope="row">value_alias</th><td class="num">100.0%</td><td class="num">7/7</td></tr>
+</tbody>
+</table></div>
+<h3>채점 중 발견한 문제</h3>
+<div class="finding">
+<p><code>E521</code> results[rfq_030].requirements[performance.airflow]</p>
+<p>원인: 스키마에 정의되지 않은 표기입니다. (알 수 없는 단위입니다: &#39;CCMH&#39;)</p>
+<p>힌트: 스키마의 `unit_aliases` 또는 `conversions`에 이 단위를 추가하거나 문서의 단위 표기대로 쓰세요.</p>
+</div>
+</section>
+
+<section id="realism">
+<h2>4. 현실성 상세</h2>
+<p>설정값 대비 관측값입니다. 합성 데이터가 설정한 대로 만들어졌는지 보는 것이며 실제 문서와 닮았는지를 말하지 않습니다.</p>
+<div class="scroll"><table class="plain">
+<caption>변형 비율</caption>
+<thead><tr><th scope="col">변형</th><th scope="col">설정</th><th scope="col">관측</th><th scope="col">대상 수</th><th scope="col">판정</th></tr></thead>
+<tbody>
+<tr><th scope="row">누락</th><td class="num">3.0%</td><td class="num">2.8%</td><td class="num">180</td><td>정상 범위</td></tr>
+<tr><th scope="row">표기 변형</th><td class="num">30.0%</td><td class="num">28.6%</td><td class="num">119</td><td>정상 범위</td></tr>
+<tr><th scope="row">오타</th><td class="num">2.0%</td><td class="num">해당 없음</td><td class="num">18</td><td>표본 부족</td></tr>
+</tbody>
+</table></div>
+<div class="scroll"><table class="plain">
+<caption>양식별 문서 수</caption>
+<thead><tr><th scope="col">양식</th><th scope="col">문서 수</th></tr></thead>
+<tbody>
+<tr><th scope="row">format_a</th><td class="num">10</td></tr>
+<tr><th scope="row">format_b</th><td class="num">10</td></tr>
+<tr><th scope="row">format_c</th><td class="num">10</td></tr>
+</tbody>
+</table></div>
+<p>적합성 분포: Comply가 아닌 판정 14.9% (상한 28.9%, 설정 variance 15.0%, 판정 175개)</p>
+</section>
+
+<section id="transition">
+<h2>5. 실데이터 전환 시 예상 차이</h2>
+<p>합성 데이터가 재현하지 못하는 것입니다. 실제 문서에 적용하면 이 항목들 때문에 결과가 달라질 수 있습니다.</p>
+<ul>
+<li>스캔·이미지 문서와 문자 인식(OCR) 오류는 만들지 못한다.</li>
+<li>자유 문장, 약어, 표 밖의 설명 같은 비정형 서술은 정해진 문장 틀로만 흉내 낸다.</li>
+<li>영어 문서에 한국어 단위 별칭(예: 볼트)이 나올 수 있다. 별칭이 문서 언어와 무관하게 선택된다. (설계 결정 24)</li>
+<li>실제 문서에서 같은 항목이 여러 곳에 반복되거나 서로 모순되는 경우는 다루지 않는다.</li>
+<li>양식은 3종뿐이다. 실제 문서의 양식 다양성은 이보다 훨씬 크다.</li>
+</ul>
+</section>
+
+<section id="repro">
+<h2>6. 재현 정보</h2>
+<div class="scroll"><table class="plain">
+<caption>실행 정보</caption>
+<thead><tr><th scope="col">항목</th><th scope="col">값</th></tr></thead>
+<tbody>
+<tr><th scope="row">실행</th><td><code>20261020-171020-s7</code></td></tr>
+<tr><th scope="row">시드</th><td>7</td></tr>
+<tr><th scope="row">스키마</th><td>rfq_requirements v0.1</td></tr>
+<tr><th scope="row">synkit 버전</th><td>0.0.1</td></tr>
+<tr><th scope="row">계약 버전</th><td>1</td></tr>
+<tr><th scope="row">생성 시각</th><td>2026-10-20T17:10:20+09:00</td></tr>
+<tr><th scope="row">문서 수</th><td>30</td></tr>
+<tr><th scope="row">제품 모델 수</th><td>12</td></tr>
+</tbody>
+</table></div>
+<div class="scroll"><table class="plain">
+<caption>파일 해시 (sha256)</caption>
+<thead><tr><th scope="col">파일</th><th scope="col">해시</th></tr></thead>
+<tbody>
+<tr><th scope="row">product_db.csv</th><td><code>453ec35f2a4e9c6f9cd81d823acee5801bfa7c536f94611698178b0f47d8f72a</code></td></tr>
+<tr><th scope="row">dataset.csv</th><td><code>c1bfec65bcd7060c64cdbb67e910b521a64ceba9bce02a7eebd05572ff3ffee1</code></td></tr>
+<tr><th scope="row">ground_truth.json</th><td><code>fde33e4f3113ffd85159524c8425e7a5a3351e703f64c4a76e9fa1c4a5efbf35</code></td></tr>
+<tr><th scope="row">document_plan.json</th><td><code>9a130453c597b4933040e77f2af57deddd1ee1e0db7f46a40b357e25f47e2dc4</code></td></tr>
+<tr><th scope="row">schema.yaml</th><td><code>1bd31c95c67f24bf47b8e4f342d4af4094cb9e339c253411b09dcee27094e3ea</code></td></tr>
+</tbody>
+</table></div>
+</section>
+
+</main>
+</body>
+</html>
