@@ -3,108 +3,88 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>synkit 체험 · 합성 문서 만들고 채점하기</title>
-<style>
-:root { --bg:#fff; --fg:#1d2330; --muted:#5a6577; --line:#d5dbe5; --surface:#f4f6fa; --accent:#1f5fbf; --accent-fg:#fff;
-  --notice-bg:#fff6df; --notice-line:#b7791f; --ok:#1a7f4b; --bad:#b42318; --warn:#a15c00; }
-@media (prefers-color-scheme: dark) { :root { --bg:#14181f; --fg:#e6e9ef; --muted:#a3adbd; --line:#343c4a; --surface:#1c222c;
-  --accent:#6ea8ff; --accent-fg:#0b1220; --notice-bg:#2c2410; --notice-line:#e0a93b; --ok:#6fd49a; --bad:#ff8a80; --warn:#f2b45a; } }
-* { box-sizing:border-box; }
-body { margin:0 auto; max-width:62rem; padding:1.5rem 1rem 4rem; background:var(--bg); color:var(--fg);
-  font:16px/1.65 "Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif; }
-h1 { font-size:1.6rem; margin:0 0 .25rem; } h2 { font-size:1.2rem; margin:2rem 0 .7rem; padding-bottom:.3rem; border-bottom:2px solid var(--line); }
-h3 { font-size:1rem; margin:1.4rem 0 .4rem; }
-.lead { color:var(--muted); margin:0 0 1rem; }
-.notice { border:2px solid var(--notice-line); background:var(--notice-bg); border-radius:.5rem; padding:.8rem 1rem; }
-.notice p { margin:.2rem 0; } .notice .tag { font-weight:700; }
-form { display:grid; grid-template-columns:repeat(auto-fit,minmax(15rem,1fr)); gap:.9rem 1.2rem; }
-label, legend { font-weight:700; font-size:.95rem; display:block; }
-.hint { font-weight:400; color:var(--muted); font-size:.85rem; }
-input[type=number] { width:100%; padding:.4rem .5rem; font:inherit; color:inherit; background:var(--bg); border:1px solid var(--line); border-radius:.3rem; }
-input[type=range] { width:100%; accent-color:var(--accent); }
-fieldset { grid-column:1/-1; border:1px solid var(--line); border-radius:.4rem; padding:.7rem 1rem; }
-fieldset label { font-weight:400; margin:.25rem 0; }
-.inject { display:none; grid-template-columns:repeat(auto-fit,minmax(8rem,1fr)); gap:.6rem; margin-top:.5rem; }
-.inject.on { display:grid; }
-button { font:inherit; font-weight:700; padding:.65rem 1.6rem; border:0; border-radius:.4rem; background:var(--accent); color:var(--accent-fg); cursor:pointer; }
-button:disabled { opacity:.55; cursor:wait; } button.link { background:none; color:var(--accent); padding:0; text-decoration:underline; font-weight:400; }
-.actions { grid-column:1/-1; display:flex; align-items:center; gap:1rem; flex-wrap:wrap; }
-#status { color:var(--muted); }
-ol.steps { padding-left:1.4rem; } ol.steps li { margin:.15rem 0; } .secs { color:var(--muted); font-size:.85rem; }
-.cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(11rem,1fr)); gap:.8rem; margin:.6rem 0 1rem; }
-.card { border:1px solid var(--line); border-radius:.5rem; padding:.7rem .9rem; background:var(--surface); }
-.card .k { color:var(--muted); font-size:.85rem; } .card .v { font-size:1.7rem; font-weight:700; font-variant-numeric:tabular-nums; line-height:1.3; }
-.card .s { font-size:.85rem; }
-table { border-collapse:collapse; width:100%; margin:.4rem 0 1rem; font-size:.92rem; }
-th, td { border:1px solid var(--line); padding:.35rem .6rem; text-align:left; vertical-align:top; }
-thead th { background:var(--surface); } td.num { text-align:right; font-variant-numeric:tabular-nums; }
-.scroll { overflow-x:auto; } code { font-family:Consolas,"D2Coding",monospace; font-size:.9em; overflow-wrap:anywhere; }
-.ok { color:var(--ok); font-weight:700; } .bad { color:var(--bad); font-weight:700; } .warn { color:var(--warn); font-weight:700; }
-.small { color:var(--muted); font-size:.88rem; } iframe { width:100%; height:34rem; border:1px solid var(--line); border-radius:.4rem; background:#fff; }
-details { margin:.5rem 0; } summary { cursor:pointer; font-weight:700; } [hidden] { display:none !important; }
-.err { border-left:3px solid var(--bad); padding-left:.8rem; margin:.6rem 0; }
-</style>
+<title>synkit 체험 · 정답이 있는 시험지를 만들고 채점하기</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header>
-  <h1>synkit 체험</h1>
-  <p class="lead">가상의 설정(스키마)만으로 정답이 붙은 <strong>합성 문서</strong>를 만들고, 추출 결과를 정답과 대조해 <strong>채점</strong>합니다. 실제 synkit 코드가 이 브라우저 안에서 돌아갑니다.</p>
-</header>
-<div class="notice" role="note">
-  <p class="tag">★ 합성 데이터 기준 (실성능 아님)</p>
-  <p>이 화면의 모든 데이터는 가상입니다. 점수는 방법의 타당성을 확인하는 용도이며 실제 문서에서의 성능을 보증하지 않습니다. 입력과 결과는 서버로 나가지 않고 내 브라우저 안에서만 처리됩니다.</p>
-</div>
+<div class="topbar"><div class="in">
+  <span class="brand"><b>synkit</b> 체험</span>
+  <span class="chip" role="note">★ 합성 데이터 기준 · 실성능 아님 · 입력은 서버로 나가지 않음</span>
+</div></div>
 
-<h2>1. 설정하고 실행</h2>
-<form id="form" autocomplete="off">
-  <div><label for="seed">시드 <span class="hint">같은 시드면 같은 데이터</span></label><input id="seed" type="number" min="1" max="99999" value="7"></div>
-  <div><label for="docs">문서 수: <output id="docs_o">30</output>건</label><input id="docs" type="range" min="6" max="30" value="30"></div>
-  <div><label for="unit_rate">표기 변형 비율: <output id="unit_rate_o">0.30</output> <span class="hint">V / volts / 볼트</span></label><input id="unit_rate" type="range" min="0" max="0.5" step="0.05" value="0.3"></div>
-  <div><label for="typo_rate">오타 비율: <output id="typo_rate_o">0.02</output></label><input id="typo_rate" type="range" min="0" max="0.1" step="0.01" value="0.02"></div>
-  <div><label for="missing_rate">누락 비율: <output id="missing_rate_o">0.03</output> <span class="hint">문서에서 항목이 빠짐</span></label><input id="missing_rate" type="range" min="0" max="0.2" step="0.01" value="0.03"></div>
-  <fieldset>
-    <legend>추출 결과는 어디서 가져올까요?</legend>
-    <label><input type="radio" name="extractor" value="baseline" checked> 문서를 실제로 읽어 추출 (규칙 기반 간이 추출기, 데모용)</label>
-    <label><input type="radio" name="extractor" value="perfect"> 정답을 그대로 제출 (채점기가 100%를 주는지 확인)</label>
-    <label><input type="radio" name="extractor" value="inject"> 일부러 틀리게 제출 (채점기가 정확히 찾아내는지 확인)</label>
-    <div class="inject" id="inject_box">
-      <div><label for="n_mis">오추출</label><input id="n_mis" type="number" min="0" max="10" value="2"></div>
-      <div><label for="n_miss">미검출</label><input id="n_miss" type="number" min="0" max="10" value="1"></div>
-      <div><label for="n_hal">환각</label><input id="n_hal" type="number" min="0" max="10" value="1"></div>
-      <div><label for="n_fmt">형식 오류</label><input id="n_fmt" type="number" min="0" max="10" value="1"></div>
-    </div>
-  </fieldset>
-  <div class="actions"><button id="run" type="submit" disabled>실행</button><span id="status" role="status">파이썬 엔진을 불러오는 중… (처음 한 번, 10~30초)</span></div>
-</form>
+<main class="wrap">
+<section class="hero">
+  <p class="eyebrow">AI가 문서에서 값을 잘 뽑는지, 채점합니다</p>
+  <h1>정답이 있는 <em>시험지</em>를 만들고,<br>믿을 수 있게 <em>채점</em>합니다</h1>
+  <p class="lead">실제 문서는 쓸 수 없으니 <strong>가상 문서와 정답지</strong>를 만들고, 문서를 읽은 결과를 정답과 비교합니다. 아래 버튼을 누르면 실제 synkit 코드가 이 브라우저 안에서 돌아갑니다.</p>
+  <div class="demo-buttons">
+    <button class="big" id="demo1" type="button" disabled><span class="n">1</span><span class="t">정상 실행</span><span class="d">가상 문서 30건을 만들고, 프로그램이 읽어서, 정답과 채점합니다</span></button>
+    <button class="big" id="demo2" type="button" disabled><span class="n">2</span><span class="t">오류 5개 넣어서 실행</span><span class="d">일부러 틀리게 낸 답안지를 채점기가 정확히 찾아내는지 확인합니다</span></button>
+  </div>
+  <p class="engine" role="status" aria-live="polite"><span class="dot" id="dot"></span><span id="status">파이썬 엔진을 불러오는 중… (처음 한 번, 10~30초)</span></p>
 
-<section id="progress" hidden><h2>2. 진행</h2><ol class="steps" id="steps"></ol></section>
+  <details class="adv">
+    <summary>직접 설정해 보기 (고급)</summary>
+    <form id="form" autocomplete="off">
+      <div><label for="seed">시드 <span class="hint">같은 시드면 같은 데이터</span></label><input id="seed" type="number" min="1" max="99999" value="7"></div>
+      <div><label for="docs">문서 수: <output id="docs_o">30</output>건</label><input id="docs" type="range" min="6" max="30" value="30"></div>
+      <div><label for="unit_rate">표기 변형 비율: <output id="unit_rate_o">0.30</output> <span class="hint">V / volts / 볼트</span></label><input id="unit_rate" type="range" min="0" max="0.5" step="0.05" value="0.3"></div>
+      <div><label for="typo_rate">오타 비율: <output id="typo_rate_o">0.02</output></label><input id="typo_rate" type="range" min="0" max="0.1" step="0.01" value="0.02"></div>
+      <div><label for="missing_rate">누락 비율: <output id="missing_rate_o">0.03</output> <span class="hint">문서에서 항목이 빠짐</span></label><input id="missing_rate" type="range" min="0" max="0.2" step="0.01" value="0.03"></div>
+      <fieldset>
+        <legend>추출 결과는 어디서 가져올까요?</legend>
+        <label><input type="radio" name="extractor" value="baseline" checked> 문서를 실제로 읽어 추출 (규칙 기반 간이 추출기, 데모용)</label>
+        <label><input type="radio" name="extractor" value="perfect"> 정답을 그대로 제출 (채점기가 100%를 주는지 확인)</label>
+        <label><input type="radio" name="extractor" value="inject"> 일부러 틀리게 제출 (채점기가 정확히 찾아내는지 확인)</label>
+        <div class="inject" id="inject_box">
+          <div><label for="n_mis">오추출</label><input id="n_mis" type="number" min="0" max="10" value="2"></div>
+          <div><label for="n_miss">미검출</label><input id="n_miss" type="number" min="0" max="10" value="1"></div>
+          <div><label for="n_hal">환각</label><input id="n_hal" type="number" min="0" max="10" value="1"></div>
+          <div><label for="n_fmt">형식 오류</label><input id="n_fmt" type="number" min="0" max="10" value="1"></div>
+        </div>
+      </fieldset>
+      <div class="actions"><button class="go" id="run" type="submit" disabled>이 설정으로 실행</button></div>
+    </form>
+  </details>
+</section>
+
+<section id="progress" hidden><h2>실행 과정</h2><ol class="pipeline" id="steps"></ol></section>
 <div id="error" class="err" hidden></div>
 
 <section id="result" hidden>
-  <h2>3. 결과 <span class="small">(합성 데이터 기준)</span></h2>
-  <div class="cards" id="cards"></div>
+  <h2>결과 <span class="small">합성 데이터 기준</span></h2>
+  <p class="summary" id="summary" aria-live="polite"></p>
+  <div class="score">
+    <div class="ring" role="img" aria-label="항목 정확도">
+      <svg viewBox="0 0 120 120" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--a1)"/><stop offset="1" stop-color="var(--a2)"/></linearGradient></defs>
+        <circle class="bg" cx="60" cy="60" r="52" fill="none" stroke-width="10"/><circle class="fg" id="ring_fg" cx="60" cy="60" r="52" fill="none" stroke-width="10" stroke-dasharray="326.73" stroke-dashoffset="326.73"/></svg>
+      <div class="num"><b id="ring_num">0.0%</b><span>항목 정확도</span></div>
+    </div>
+    <div class="tiles" id="tiles"></div>
+  </div>
   <div id="inject_result"></div>
-  <h3>양식별 점수</h3><div class="scroll" id="by_template"></div>
+  <h3>양식별 점수 <span class="small">줄무늬 막대 = 개발에 쓰지 않고 채점에만 쓴 양식(보류)</span></h3>
+  <div class="bars" id="by_template"></div><p class="small" id="gap_note"></p>
   <h3>문서 한 건을 따라가 보기 <span class="small" id="doc_title"></span></h3>
   <p class="small">정답 → 문서에 찍힌 모습(표기 변형·오타) → 추출 결과 순서입니다. 표기가 달라도 같은 값이면 일치로 칩니다.</p>
-  <div class="scroll" id="doc_view"></div>
+  <div class="table-wrap" id="doc_view"></div>
   <details id="issues_box"><summary>채점이 지적한 항목 (위치 · 원인 · 힌트)</summary><div id="issues"></div></details>
-  <h3>만들어진 합성 문서 내려받기</h3><p id="files" class="small"></p>
-  <details><summary>합성 데이터 미리보기 (dataset.csv)</summary><div class="scroll" id="dataset"></div></details>
-  <h3>전체 리포트</h3>
-  <p><button type="button" class="link" id="open_report">새 창으로 열기</button> <span class="small">(첫 섹션이 한계 고지입니다)</span></p>
-  <details><summary>이 페이지 안에서 보기</summary><iframe id="report_frame" sandbox title="synkit 리포트"></iframe></details>
+  <details><summary>만들어진 합성 문서 내려받기</summary><p id="files" class="small"></p></details>
+  <details><summary>합성 데이터 미리보기 (dataset.csv)</summary><div class="table-wrap" id="dataset"></div></details>
+  <details><summary>전체 리포트 보기</summary><p><button type="button" class="link" id="open_report">새 창으로 열기</button> <span class="small">(첫 섹션이 한계 고지입니다)</span></p><iframe id="report_frame" sandbox title="synkit 리포트"></iframe></details>
+  <div class="note"><b>※ 한계</b> 이 점수는 가상 문서 기준이며 실제 문서에서의 성능을 보증하지 않습니다. 간이 추출기는 단순한 규칙 프로그램이라 AI의 성능을 대표하지 않습니다.</div>
 </section>
 
-<footer class="small">
+<footer>
   <h2>알아둘 것</h2>
   <ul>
-    <li>간이 추출기는 정규식 기반이며 LLM 추출의 성능을 대표하지 않습니다. 채점기가 어디서 틀리는지를 보여 주는 재료입니다.</li>
     <li>양식은 3종(표·서술·병합 표)뿐이고 스캔 품질, 비정형 서술은 재현하지 못합니다.</li>
     <li>이 페이지는 <a href="https://github.com/hansol418/synkit-demo">synkit-demo</a> 저장소에 있습니다. 전체 도구(채점 이력, DB 연동 등)는 비공개 저장소에 있습니다.</li>
   </ul>
 </footer>
+</main>
 <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+<script src="render.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
