@@ -3,223 +3,108 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>합성 데이터 점검·채점 리포트 · rfq_requirements</title>
+<title>synkit 체험 · 합성 문서 만들고 채점하기</title>
 <style>
-:root {
-  --bg: #ffffff; --fg: #1d2330; --muted: #5a6577; --line: #d5dbe5; --surface: #f4f6fa;
-  --notice-bg: #fff6df; --notice-line: #b7791f; --fail: #b42318; --warn: #a15c00; --skip: #5a6577; --pass: #1a7f4b;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #14181f; --fg: #e6e9ef; --muted: #a3adbd; --line: #343c4a; --surface: #1c222c;
-    --notice-bg: #2c2410; --notice-line: #e0a93b; --fail: #ff8a80; --warn: #f2b45a; --skip: #a3adbd; --pass: #6fd49a;
-  }
-}
-* { box-sizing: border-box; }
-body { margin: 0 auto; max-width: 62rem; padding: 1.5rem 1rem 4rem; background: var(--bg); color: var(--fg);
-  font: 16px/1.65 "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif; }
-h1 { font-size: 1.6rem; margin: 0 0 .25rem; }
-h2 { font-size: 1.25rem; margin: 2.2rem 0 .75rem; padding-bottom: .3rem; border-bottom: 2px solid var(--line); }
-h3 { font-size: 1.05rem; margin: 1.4rem 0 .4rem; }
-.meta { color: var(--muted); margin: 0 0 1.2rem; }
-.notice { border: 2px solid var(--notice-line); background: var(--notice-bg); border-radius: .5rem; padding: .9rem 1.1rem; }
-.notice .tag { font-weight: 700; margin: 0 0 .4rem; }
-.notice p { margin: .3rem 0; }
-.headline { font-size: 1.15rem; }
-table { border-collapse: collapse; width: 100%; margin: .4rem 0 1.2rem; font-size: .94rem; }
-caption { text-align: left; color: var(--muted); font-size: .88rem; padding: .3rem 0; }
-th, td { border: 1px solid var(--line); padding: .35rem .6rem; text-align: left; vertical-align: top; }
-thead th { background: var(--surface); }
-td.num { text-align: right; font-variant-numeric: tabular-nums; }
-.badge { display: inline-block; padding: 0 .45rem; border: 1px solid currentColor; border-radius: .3rem; font-weight: 700; font-size: .85rem; white-space: nowrap; }
-.s-fail { color: var(--fail); } .s-warn { color: var(--warn); } .s-skip { color: var(--skip); } .s-pass { color: var(--pass); }
-code { font-family: Consolas, "D2Coding", monospace; font-size: .9em; word-break: break-all; }
-.finding { margin: .3rem 0 .8rem; padding-left: .8rem; border-left: 3px solid var(--line); }
-.finding p { margin: .1rem 0; }
-.small { color: var(--muted); font-size: .9rem; }
-.scroll { overflow-x: auto; }
-@media print {
-  :root { --bg: #ffffff; --fg: #000000; --muted: #333333; --line: #888888; --surface: #eeeeee; --notice-bg: #ffffff; --notice-line: #000000; }
-  body { max-width: none; padding: 0; font-size: 11pt; }
-  h2 { break-after: avoid; } table, .finding { break-inside: avoid; }
-}
+:root { --bg:#fff; --fg:#1d2330; --muted:#5a6577; --line:#d5dbe5; --surface:#f4f6fa; --accent:#1f5fbf; --accent-fg:#fff;
+  --notice-bg:#fff6df; --notice-line:#b7791f; --ok:#1a7f4b; --bad:#b42318; --warn:#a15c00; }
+@media (prefers-color-scheme: dark) { :root { --bg:#14181f; --fg:#e6e9ef; --muted:#a3adbd; --line:#343c4a; --surface:#1c222c;
+  --accent:#6ea8ff; --accent-fg:#0b1220; --notice-bg:#2c2410; --notice-line:#e0a93b; --ok:#6fd49a; --bad:#ff8a80; --warn:#f2b45a; } }
+* { box-sizing:border-box; }
+body { margin:0 auto; max-width:62rem; padding:1.5rem 1rem 4rem; background:var(--bg); color:var(--fg);
+  font:16px/1.65 "Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif; }
+h1 { font-size:1.6rem; margin:0 0 .25rem; } h2 { font-size:1.2rem; margin:2rem 0 .7rem; padding-bottom:.3rem; border-bottom:2px solid var(--line); }
+h3 { font-size:1rem; margin:1.4rem 0 .4rem; }
+.lead { color:var(--muted); margin:0 0 1rem; }
+.notice { border:2px solid var(--notice-line); background:var(--notice-bg); border-radius:.5rem; padding:.8rem 1rem; }
+.notice p { margin:.2rem 0; } .notice .tag { font-weight:700; }
+form { display:grid; grid-template-columns:repeat(auto-fit,minmax(15rem,1fr)); gap:.9rem 1.2rem; }
+label, legend { font-weight:700; font-size:.95rem; display:block; }
+.hint { font-weight:400; color:var(--muted); font-size:.85rem; }
+input[type=number] { width:100%; padding:.4rem .5rem; font:inherit; color:inherit; background:var(--bg); border:1px solid var(--line); border-radius:.3rem; }
+input[type=range] { width:100%; accent-color:var(--accent); }
+fieldset { grid-column:1/-1; border:1px solid var(--line); border-radius:.4rem; padding:.7rem 1rem; }
+fieldset label { font-weight:400; margin:.25rem 0; }
+.inject { display:none; grid-template-columns:repeat(auto-fit,minmax(8rem,1fr)); gap:.6rem; margin-top:.5rem; }
+.inject.on { display:grid; }
+button { font:inherit; font-weight:700; padding:.65rem 1.6rem; border:0; border-radius:.4rem; background:var(--accent); color:var(--accent-fg); cursor:pointer; }
+button:disabled { opacity:.55; cursor:wait; } button.link { background:none; color:var(--accent); padding:0; text-decoration:underline; font-weight:400; }
+.actions { grid-column:1/-1; display:flex; align-items:center; gap:1rem; flex-wrap:wrap; }
+#status { color:var(--muted); }
+ol.steps { padding-left:1.4rem; } ol.steps li { margin:.15rem 0; } .secs { color:var(--muted); font-size:.85rem; }
+.cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(11rem,1fr)); gap:.8rem; margin:.6rem 0 1rem; }
+.card { border:1px solid var(--line); border-radius:.5rem; padding:.7rem .9rem; background:var(--surface); }
+.card .k { color:var(--muted); font-size:.85rem; } .card .v { font-size:1.7rem; font-weight:700; font-variant-numeric:tabular-nums; line-height:1.3; }
+.card .s { font-size:.85rem; }
+table { border-collapse:collapse; width:100%; margin:.4rem 0 1rem; font-size:.92rem; }
+th, td { border:1px solid var(--line); padding:.35rem .6rem; text-align:left; vertical-align:top; }
+thead th { background:var(--surface); } td.num { text-align:right; font-variant-numeric:tabular-nums; }
+.scroll { overflow-x:auto; } code { font-family:Consolas,"D2Coding",monospace; font-size:.9em; overflow-wrap:anywhere; }
+.ok { color:var(--ok); font-weight:700; } .bad { color:var(--bad); font-weight:700; } .warn { color:var(--warn); font-weight:700; }
+.small { color:var(--muted); font-size:.88rem; } iframe { width:100%; height:34rem; border:1px solid var(--line); border-radius:.4rem; background:#fff; }
+details { margin:.5rem 0; } summary { cursor:pointer; font-weight:700; } [hidden] { display:none !important; }
+.err { border-left:3px solid var(--bad); padding-left:.8rem; margin:.6rem 0; }
 </style>
 </head>
 <body>
 <header>
-<h1>합성 데이터 점검·채점 리포트</h1>
-<p class="meta">스키마 <code>rfq_requirements</code> v0.1 · 실행 <code>20261020-171020-s7</code></p>
+  <h1>synkit 체험</h1>
+  <p class="lead">가상의 설정(스키마)만으로 정답이 붙은 <strong>합성 문서</strong>를 만들고, 추출 결과를 정답과 대조해 <strong>채점</strong>합니다. 실제 synkit 코드가 이 브라우저 안에서 돌아갑니다.</p>
 </header>
-<main>
-
-<section id="limits">
-<h2>1. 한계 고지</h2>
 <div class="notice" role="note">
-<p class="tag">★ 합성 데이터 기준 (실성능 아님)</p>
-<p>이 결과는 합성 데이터를 기준으로 한다. 방법의 타당성을 확인하는 용도이며 실제 문서에서의 성능을 보증하지 않는다. 실제 문서의 오류, 스캔 품질, 양식 다양성은 재현하지 못한다.</p>
+  <p class="tag">★ 합성 데이터 기준 (실성능 아님)</p>
+  <p>이 화면의 모든 데이터는 가상입니다. 점수는 방법의 타당성을 확인하는 용도이며 실제 문서에서의 성능을 보증하지 않습니다. 입력과 결과는 서버로 나가지 않고 내 브라우저 안에서만 처리됩니다.</p>
 </div>
-<h3>이 결과가 입증하는 것</h3>
-<ul>
-<li>스키마 설정대로 합성 데이터와 정답이 만들어지고, 같은 시드면 같은 데이터가 나온다.</li>
-<li>만든 문서를 다시 읽으면 정답이 복원된다. (왕복 검증)</li>
-<li>채점기가 알려진 개수의 오류를 정확히 센다. (오답 주입 시험)</li>
-<li>점검 항목(제약, 변형 비율, 분포, 안전성, 왕복, 재현성)의 기준에서 이 데이터가 규칙을 지킨다.</li>
-</ul>
-<h3>이 결과가 입증하지 못하는 것</h3>
-<ul>
-<li>실제 문서에서의 추출 정확도. 합성 문서에서 높은 점수가 나와도 실제 문서에서도 그렇다는 뜻이 아니다.</li>
-<li>실제 문서의 스캔 품질, 비정형 서술, 오류, 표 모양의 다양성. 합성 문서는 정해진 양식 3종과 문장 틀로만 만든다.</li>
-<li>보류 양식에서의 일반화 성능. 보류 양식도 같은 생성기가 만든 합성 문서이므로, 격차는 개발 양식에 맞춰 튜닝했는지를 보는 지표일 뿐이다.</li>
-<li>수작업 대비 시간 절감. 이것은 별도로 측정한다.</li>
-</ul>
+
+<h2>1. 설정하고 실행</h2>
+<form id="form" autocomplete="off">
+  <div><label for="seed">시드 <span class="hint">같은 시드면 같은 데이터</span></label><input id="seed" type="number" min="1" max="99999" value="7"></div>
+  <div><label for="docs">문서 수: <output id="docs_o">30</output>건</label><input id="docs" type="range" min="6" max="30" value="30"></div>
+  <div><label for="unit_rate">표기 변형 비율: <output id="unit_rate_o">0.30</output> <span class="hint">V / volts / 볼트</span></label><input id="unit_rate" type="range" min="0" max="0.5" step="0.05" value="0.3"></div>
+  <div><label for="typo_rate">오타 비율: <output id="typo_rate_o">0.02</output></label><input id="typo_rate" type="range" min="0" max="0.1" step="0.01" value="0.02"></div>
+  <div><label for="missing_rate">누락 비율: <output id="missing_rate_o">0.03</output> <span class="hint">문서에서 항목이 빠짐</span></label><input id="missing_rate" type="range" min="0" max="0.2" step="0.01" value="0.03"></div>
+  <fieldset>
+    <legend>추출 결과는 어디서 가져올까요?</legend>
+    <label><input type="radio" name="extractor" value="baseline" checked> 문서를 실제로 읽어 추출 (규칙 기반 간이 추출기, 데모용)</label>
+    <label><input type="radio" name="extractor" value="perfect"> 정답을 그대로 제출 (채점기가 100%를 주는지 확인)</label>
+    <label><input type="radio" name="extractor" value="inject"> 일부러 틀리게 제출 (채점기가 정확히 찾아내는지 확인)</label>
+    <div class="inject" id="inject_box">
+      <div><label for="n_mis">오추출</label><input id="n_mis" type="number" min="0" max="10" value="2"></div>
+      <div><label for="n_miss">미검출</label><input id="n_miss" type="number" min="0" max="10" value="1"></div>
+      <div><label for="n_hal">환각</label><input id="n_hal" type="number" min="0" max="10" value="1"></div>
+      <div><label for="n_fmt">형식 오류</label><input id="n_fmt" type="number" min="0" max="10" value="1"></div>
+    </div>
+  </fieldset>
+  <div class="actions"><button id="run" type="submit" disabled>실행</button><span id="status" role="status">파이썬 엔진을 불러오는 중… (처음 한 번, 10~30초)</span></div>
+</form>
+
+<section id="progress" hidden><h2>2. 진행</h2><ol class="steps" id="steps"></ol></section>
+<div id="error" class="err" hidden></div>
+
+<section id="result" hidden>
+  <h2>3. 결과 <span class="small">(합성 데이터 기준)</span></h2>
+  <div class="cards" id="cards"></div>
+  <div id="inject_result"></div>
+  <h3>양식별 점수</h3><div class="scroll" id="by_template"></div>
+  <h3>문서 한 건을 따라가 보기 <span class="small" id="doc_title"></span></h3>
+  <p class="small">정답 → 문서에 찍힌 모습(표기 변형·오타) → 추출 결과 순서입니다. 표기가 달라도 같은 값이면 일치로 칩니다.</p>
+  <div class="scroll" id="doc_view"></div>
+  <details id="issues_box"><summary>채점이 지적한 항목 (위치 · 원인 · 힌트)</summary><div id="issues"></div></details>
+  <h3>만들어진 합성 문서 내려받기</h3><p id="files" class="small"></p>
+  <details><summary>합성 데이터 미리보기 (dataset.csv)</summary><div class="scroll" id="dataset"></div></details>
+  <h3>전체 리포트</h3>
+  <p><button type="button" class="link" id="open_report">새 창으로 열기</button> <span class="small">(첫 섹션이 한계 고지입니다)</span></p>
+  <details><summary>이 페이지 안에서 보기</summary><iframe id="report_frame" sandbox title="synkit 리포트"></iframe></details>
 </section>
 
-<section id="summary">
-<h2>2. 결과 요약</h2>
-<p class="headline">점검 결과 (합성 데이터 기준 (실성능 아님)):
-통과 <strong>5</strong> · 경고 <strong>0</strong> ·
-실패 <strong>0</strong> · 건너뜀 <strong>1</strong></p>
-<div class="scroll"><table class="plain">
-<caption>점검 항목별 상태 (조치가 필요한 항목이 먼저)</caption>
-<thead><tr><th scope="col">상태</th><th scope="col">항목</th><th scope="col">이름</th><th scope="col">발견</th><th scope="col">참고</th></tr></thead>
-<tbody>
-<tr><td><span class="badge s-skip">SKIP (건너뜀)</span></td><th scope="row">C6</th><td>재현성</td><td class="num">0건</td><td>느려서 기본으로는 건너뜁니다. `--reproduce`를 붙이면 점검합니다.</td></tr>
-<tr><td><span class="badge s-pass">PASS (통과)</span></td><th scope="row">C1</th><td>제약 위반</td><td class="num">0건</td><td></td></tr>
-<tr><td><span class="badge s-pass">PASS (통과)</span></td><th scope="row">C2</th><td>변형 비율</td><td class="num">0건</td><td></td></tr>
-<tr><td><span class="badge s-pass">PASS (통과)</span></td><th scope="row">C3</th><td>분포</td><td class="num">0건</td><td>표본 부족: 값이 30개 미만인 항목은 분포를 판정하지 않았습니다.</td></tr>
-<tr><td><span class="badge s-pass">PASS (통과)</span></td><th scope="row">C4</th><td>안전성</td><td class="num">0건</td><td></td></tr>
-<tr><td><span class="badge s-pass">PASS (통과)</span></td><th scope="row">C5</th><td>왕복 정합성</td><td class="num">0건</td><td></td></tr>
-</tbody>
-</table></div>
-</section>
-
-<section id="grade">
-<h2>3. 채점 결과</h2>
-<p class="headline">항목 정확도 <strong>99.4%</strong> (합성 데이터 기준 (실성능 아님)) — 179/180</p>
-<div class="scroll"><table class="score">
-<caption>전체 지표 (합성 데이터 기준 (실성능 아님))</caption>
-<thead><tr><th scope="col">지표</th><th scope="col">값</th><th scope="col">건수</th></tr></thead>
-<tbody>
-<tr><th scope="row">항목 정확도</th><td class="num">99.4%</td><td class="num">179/180</td></tr>
-<tr><th scope="row">문서 단위 완전 일치율</th><td class="num">96.7%</td><td class="num">29/30</td></tr>
-<tr><th scope="row">적합성 일치율</th><td class="num">해당 없음</td><td class="num">0/0</td></tr>
-<tr><th scope="row">오추출</th><td></td><td class="num">0</td></tr>
-<tr><th scope="row">미검출</th><td></td><td class="num">0</td></tr>
-<tr><th scope="row">환각</th><td></td><td class="num">0</td></tr>
-<tr><th scope="row">형식 오류</th><td></td><td class="num">1</td></tr>
-</tbody>
-</table></div>
-
-<div class="scroll"><table class="score">
-<caption>양식별 점수 (합성 데이터 기준 (실성능 아님))</caption>
-<thead><tr><th scope="col">양식</th><th scope="col">구분</th><th scope="col">항목 정확도</th><th scope="col">문서 완전 일치</th><th scope="col">오추출</th><th scope="col">미검출</th><th scope="col">환각</th><th scope="col">형식 오류</th></tr></thead>
-<tbody>
-<tr><th scope="row">format_a</th><td>개발</td><td class="num">100.0%</td><td class="num">10/10</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
-<tr><th scope="row">format_b</th><td>개발</td><td class="num">100.0%</td><td class="num">10/10</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
-<tr><th scope="row">format_c</th><td>보류</td><td class="num">98.3%</td><td class="num">9/10</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">1</td></tr>
-</tbody>
-</table></div>
-<p>보류 양식 격차: 개발 100.0% − 보류 98.3% = <strong>1.7%p</strong> (합성 데이터 기준 (실성능 아님)).
-<span class="small">격차는 개발 양식에 맞춰 튜닝했는지를 보는 지표이며 실제 문서에서의 일반화 성능이 아닙니다.</span></p>
-
-<div class="scroll"><table class="score">
-<caption>요구사항별 점수 (합성 데이터 기준 (실성능 아님))</caption>
-<thead><tr><th scope="col">요구사항</th><th scope="col">항목 정확도</th><th scope="col">오추출</th><th scope="col">미검출</th><th scope="col">환각</th><th scope="col">형식 오류</th></tr></thead>
-<tbody>
-<tr><th scope="row"><code>electrical.rated_voltage</code></th><td class="num">100.0%</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
-<tr><th scope="row"><code>electrical.rated_current</code></th><td class="num">100.0%</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
-<tr><th scope="row"><code>performance.airflow</code></th><td class="num">96.7%</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">1</td></tr>
-<tr><th scope="row"><code>durability.life_hours</code></th><td class="num">100.0%</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
-<tr><th scope="row"><code>mechanical.connector_type</code></th><td class="num">100.0%</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
-<tr><th scope="row"><code>certification.standards</code></th><td class="num">100.0%</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
-</tbody>
-</table></div>
-
-<div class="scroll"><table class="score">
-<caption>변형별 점수 (합성 데이터 기준 (실성능 아님))</caption>
-<thead><tr><th scope="col">변형 태그</th><th scope="col">항목 정확도</th><th scope="col">맞음/전체</th></tr></thead>
-<tbody>
-<tr><th scope="row">missing</th><td class="num">100.0%</td><td class="num">5/5</td></tr>
-<tr><th scope="row">none</th><td class="num">100.0%</td><td class="num">134/134</td></tr>
-<tr><th scope="row">typo</th><td class="num">0.0%</td><td class="num">0/1</td></tr>
-<tr><th scope="row">unit_alias</th><td class="num">96.9%</td><td class="num">31/32</td></tr>
-<tr><th scope="row">unit_converted</th><td class="num">100.0%</td><td class="num">2/2</td></tr>
-<tr><th scope="row">value_alias</th><td class="num">100.0%</td><td class="num">7/7</td></tr>
-</tbody>
-</table></div>
-<h3>채점 중 발견한 문제</h3>
-<div class="finding">
-<p><code>E521</code> results[rfq_030].requirements[performance.airflow]</p>
-<p>원인: 스키마에 정의되지 않은 표기입니다. (알 수 없는 단위입니다: &#39;CCMH&#39;)</p>
-<p>힌트: 스키마의 `unit_aliases` 또는 `conversions`에 이 단위를 추가하거나 문서의 단위 표기대로 쓰세요.</p>
-</div>
-</section>
-
-<section id="realism">
-<h2>4. 현실성 상세</h2>
-<p>설정값 대비 관측값입니다. 합성 데이터가 설정한 대로 만들어졌는지 보는 것이며 실제 문서와 닮았는지를 말하지 않습니다.</p>
-<div class="scroll"><table class="plain">
-<caption>변형 비율</caption>
-<thead><tr><th scope="col">변형</th><th scope="col">설정</th><th scope="col">관측</th><th scope="col">대상 수</th><th scope="col">판정</th></tr></thead>
-<tbody>
-<tr><th scope="row">누락</th><td class="num">3.0%</td><td class="num">2.8%</td><td class="num">180</td><td>정상 범위</td></tr>
-<tr><th scope="row">표기 변형</th><td class="num">30.0%</td><td class="num">28.6%</td><td class="num">119</td><td>정상 범위</td></tr>
-<tr><th scope="row">오타</th><td class="num">2.0%</td><td class="num">해당 없음</td><td class="num">18</td><td>표본 부족</td></tr>
-</tbody>
-</table></div>
-<div class="scroll"><table class="plain">
-<caption>양식별 문서 수</caption>
-<thead><tr><th scope="col">양식</th><th scope="col">문서 수</th></tr></thead>
-<tbody>
-<tr><th scope="row">format_a</th><td class="num">10</td></tr>
-<tr><th scope="row">format_b</th><td class="num">10</td></tr>
-<tr><th scope="row">format_c</th><td class="num">10</td></tr>
-</tbody>
-</table></div>
-<p>적합성 분포: Comply가 아닌 판정 14.9% (상한 28.9%, 설정 variance 15.0%, 판정 175개)</p>
-</section>
-
-<section id="transition">
-<h2>5. 실데이터 전환 시 예상 차이</h2>
-<p>합성 데이터가 재현하지 못하는 것입니다. 실제 문서에 적용하면 이 항목들 때문에 결과가 달라질 수 있습니다.</p>
-<ul>
-<li>스캔·이미지 문서와 문자 인식(OCR) 오류는 만들지 못한다.</li>
-<li>자유 문장, 약어, 표 밖의 설명 같은 비정형 서술은 정해진 문장 틀로만 흉내 낸다.</li>
-<li>영어 문서에 한국어 단위 별칭(예: 볼트)이 나올 수 있다. 별칭이 문서 언어와 무관하게 선택된다. (설계 결정 24)</li>
-<li>실제 문서에서 같은 항목이 여러 곳에 반복되거나 서로 모순되는 경우는 다루지 않는다.</li>
-<li>양식은 3종뿐이다. 실제 문서의 양식 다양성은 이보다 훨씬 크다.</li>
-</ul>
-</section>
-
-<section id="repro">
-<h2>6. 재현 정보</h2>
-<div class="scroll"><table class="plain">
-<caption>실행 정보</caption>
-<thead><tr><th scope="col">항목</th><th scope="col">값</th></tr></thead>
-<tbody>
-<tr><th scope="row">실행</th><td><code>20261020-171020-s7</code></td></tr>
-<tr><th scope="row">시드</th><td>7</td></tr>
-<tr><th scope="row">스키마</th><td>rfq_requirements v0.1</td></tr>
-<tr><th scope="row">synkit 버전</th><td>0.0.1</td></tr>
-<tr><th scope="row">계약 버전</th><td>1</td></tr>
-<tr><th scope="row">생성 시각</th><td>2026-10-20T17:10:20+09:00</td></tr>
-<tr><th scope="row">문서 수</th><td>30</td></tr>
-<tr><th scope="row">제품 모델 수</th><td>12</td></tr>
-</tbody>
-</table></div>
-<div class="scroll"><table class="plain">
-<caption>파일 해시 (sha256)</caption>
-<thead><tr><th scope="col">파일</th><th scope="col">해시</th></tr></thead>
-<tbody>
-<tr><th scope="row">product_db.csv</th><td><code>453ec35f2a4e9c6f9cd81d823acee5801bfa7c536f94611698178b0f47d8f72a</code></td></tr>
-<tr><th scope="row">dataset.csv</th><td><code>c1bfec65bcd7060c64cdbb67e910b521a64ceba9bce02a7eebd05572ff3ffee1</code></td></tr>
-<tr><th scope="row">ground_truth.json</th><td><code>fde33e4f3113ffd85159524c8425e7a5a3351e703f64c4a76e9fa1c4a5efbf35</code></td></tr>
-<tr><th scope="row">document_plan.json</th><td><code>9a130453c597b4933040e77f2af57deddd1ee1e0db7f46a40b357e25f47e2dc4</code></td></tr>
-<tr><th scope="row">schema.yaml</th><td><code>1bd31c95c67f24bf47b8e4f342d4af4094cb9e339c253411b09dcee27094e3ea</code></td></tr>
-</tbody>
-</table></div>
-</section>
-
-</main>
+<footer class="small">
+  <h2>알아둘 것</h2>
+  <ul>
+    <li>간이 추출기는 정규식 기반이며 LLM 추출의 성능을 대표하지 않습니다. 채점기가 어디서 틀리는지를 보여 주는 재료입니다.</li>
+    <li>양식은 3종(표·서술·병합 표)뿐이고 스캔 품질, 비정형 서술은 재현하지 못합니다.</li>
+    <li>이 페이지는 <a href="https://github.com/hansol418/synkit-demo">synkit-demo</a> 저장소에 있습니다. 전체 도구(채점 이력, DB 연동 등)는 비공개 저장소에 있습니다.</li>
+  </ul>
+</footer>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
